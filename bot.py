@@ -35,7 +35,11 @@ async def on_message(message):
             await message.channel.send(f"你想要有{number_of_impostors}個內鬼是不是")
             return
         ctx = await bot.get_context(message)
-        members = [await commands.MemberConverter().convert(ctx, member) for member in content[1:]]
+        try:
+            members = [await commands.MemberConverter().convert(ctx, member) for member in content[1:]]
+        except commands.BadArgument:
+            await message.channel.send('不是 這誰')
+            return
 
         if number_of_impostors > len(members):
             await message.channel.send(f"就只有 {len(members)} 個人 是要怎麼有 {number_of_impostors} 個內鬼")
@@ -44,7 +48,6 @@ async def on_message(message):
         impostors = random.sample(members, number_of_impostors)
 
         for impostor in impostors:
-            # if the selected impostor is the bot itself, send the message to the channel
             if impostor == bot.user:
                 await message.channel.send("哈哈選到我了 屁眼")
                 continue
