@@ -45,16 +45,25 @@ async def on_message(message):
             await message.channel.send(f"就只有 {len(members)} 個人 是要怎麼有 {number_of_impostors} 個內鬼")
             return
     
-        impostors = random.sample(members, number_of_impostors)
+        # split members into impostors and crewmates
+        random.shuffle(members)
+        impostors = members[:number_of_impostors]
+        crewmates = members[number_of_impostors:]
 
         for impostor in impostors:
             if impostor == bot.user:
                 await message.channel.send("哈哈選到我了 屁眼")
                 continue
             try:
-                await impostor.send('內鬼')
+                await impostor.send('你是內鬼 吃蟹堡')
             except discord.Forbidden:
                 await message.channel.send(f'沒辦法私訊 {impostor.mention}')
+
+        for crewmate in crewmates:
+            try:
+                await crewmate.send('你是平民 屁眼')
+            except discord.Forbidden:
+                await message.channel.send(f'沒辦法私訊 {crewmate.mention}')
 
         await message.channel.send(f'內鬼可以看私訊了')
     
